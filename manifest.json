@@ -1,6 +1,6 @@
 {
   "name": "January 2026 Habit Tracker",
-  "short_name": "Habit Tracker",
+  "short_name": "Jan Habit Tracker",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0b0b0b",
