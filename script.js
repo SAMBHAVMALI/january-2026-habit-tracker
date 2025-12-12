@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
       data: {
         labels: ["Done", "Not Done"],
         datasets: [{
-          data: [done || 1, notDone || 1],
+          data: [done, notDone],
           backgroundColor: ["#00ff99", "#ff4d4d"]
         }]
       }
