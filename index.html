@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>Untitled</title>
+    <link rel="stylesheet" href="./style.css">
+
+  </head>
+    
+  <body>
+  <h1>📅 January 2026 Habit Tracker</h1>
+
+<div class="container">
+
+  <!-- SETUP SCREEN -->
+  <div id="setup"></div>
+
+  <!-- MAIN SCREEN -->
+  <div id="main" style="display:none">
+
+    <div class="nav">
+      <button onclick="prevDay()">⬅ Previous</button>
+      <h2 id="dateText"></h2>
+      <button onclick="nextDay()">Next ➡</button>
+    </div>
+
+    <div id="habits" class="habits"></div>
+
+    <div class="charts">
+      <div class="chartBox">
+        <h3>Daily Progress</h3>
+        <canvas id="dailyPie"></canvas>
+      </div>
+
+      <div class="chartBox">
+        <h3>Monthly Trend</h3>
+        <canvas id="monthlyLine"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+    <script src='https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js'></script><script  src="./script.js"></script>
+
+  </body>
+  
+</html>
