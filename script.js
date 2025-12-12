@@ -101,14 +101,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-function setHabit(day, habit, value) {
-  if (!data.log[day]) data.log[day] = {};
-  data.log[day][habit] = value;
-
-  saveData();
-  renderHabits();
-  renderCharts();   // ⭐ THIS IS THE FIX
-}
+  function setHabit(habit, value) {
+    data.log[currentDay][habit] = value;
+    renderHabits();
+    renderCharts();
+  }
 
   // ---------- STATS ----------
   function dailyStats() {
@@ -134,67 +131,45 @@ function setHabit(day, habit, value) {
 
   // ---------- CHARTS ----------
   function renderCharts() {
-  renderDailyPie();
-  renderMonthlyLine();
-}
+    const pieCtx = document.getElementById("dailyPie");
+    const lineCtx = document.getElementById("monthlyLine");
 
-// ---------- DAILY PIE ----------
-function renderDailyPie() {
-  const ctx = document.getElementById("dailyPie");
+    if (pieChart) pieChart.destroy();
+    if (lineChart) lineChart.destroy();
 
-  if (pieChart) pieChart.destroy();
+    const { done, notDone } = dailyStats();
 
-  const { done, notDone } = dailyStats();
+    pieChart = new Chart(pieCtx, {
+      type: "pie",
+      data: {
+        labels: ["Done", "Not Done"],
+        datasets: [{
+          data: [done || 1, notDone || 1],
+          backgroundColor: ["#00ff99", "#ff4d4d"]
+        }]
+      }
+    });
 
-  pieChart = new Chart(ctx, {
-    type: "pie",
-    data: {
-      labels: ["Done", "Not Done"],
-      datasets: [{
-        data: [done, notDone],
-        backgroundColor: ["#00e676", "#ff5252"]
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          labels: { font: { size: 16 } }
+    lineChart = new Chart(lineCtx, {
+      type: "line",
+      data: {
+        labels: Array.from({ length: DAYS }, (_, i) => i + 1),
+        datasets: [{
+          label: "Habits Completed",
+          data: monthlyTrend().map(v => v || 0.2),
+          borderColor: "#00e5ff",
+          pointRadius: 5,
+          tension: 0.3
+        }]
+      },
+      options: {
+        scales: {
+          y: { beginAtZero: true }
         }
       }
-    }
-  });
-}
+    });
+  }
 
-// ---------- MONTHLY LINE ----------
-function renderMonthlyLine() {
-  const ctx = document.getElementById("monthlyLine");
+});
 
-  if (lineChart) lineChart.destroy();
-
-  lineChart = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: Array.from({ length: DAYS }, (_, i) => i + 1),
-      datasets: [{
-        label: "Habits Completed",
-        data: monthlyTrend(),
-        borderColor: "#00b0ff",
-        backgroundColor: "rgba(0,176,255,0.2)",
-        tension: 0.3,
-        pointRadius: 5,
-        fill: true
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { stepSize: 1 }
-        }
-      }
-    }
-  });
-}
 
