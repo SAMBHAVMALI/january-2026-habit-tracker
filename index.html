@@ -2,61 +2,178 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>January 2026 Habit Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Jason Habit Tracker</title>
 
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="logo.png">
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
 
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #020617;
+      color: white;
+    }
+
+    header {
+      text-align: center;
+      padding: 16px;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .container {
+      padding: 16px;
+    }
+
+    .add-habit {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .add-habit input {
+      flex: 1;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+
+    .add-habit button {
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #2563eb;
+      color: white;
+      cursor: pointer;
+    }
+
+    /* HABIT COLUMNS */
+    #habitGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .habit-card {
+      background: #0f172a;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .habit-card p {
+      margin: 0 0 10px;
+      font-weight: 600;
+    }
+
+    .habit-card input {
+      transform: scale(1.4);
+    }
+
+    /* PIE */
+    .chart-box {
+      background: #0f172a;
+      border-radius: 16px;
+      padding: 16px;
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- SPLASH SCREEN -->
-<div id="splash">
-  <img src="logo.png" alt="Logo">
-  <h2>Habit Tracker</h2>
-</div>
+  <header>Jason Habit Tracker</header>
 
-<!-- TOP BAR -->
-<div id="topbar" class="hidden">
-  <span class="menu" onclick="toggleMenu()">⋮</span>
-  <span class="title">January 2026 Habit Tracker</span>
-</div>
+  <div class="container">
 
-<!-- MENU -->
-<div id="menu" class="menu-box hidden">
-  <button onclick="resetToday()">Reset Today</button>
-  <button onclick="resetMonth()">Reset Month</button>
-  <button onclick="resetAll()">Reset Everything</button>
-</div>
-
-<!-- SETUP -->
-<div id="setup" class="card hidden">
-  <h3>Enter up to 10 habits</h3>
-  <input id="habitInput" placeholder="Water, Workout, Study..." />
-  <button onclick="saveHabits()">Start Tracking</button>
-</div>
-
-<!-- MAIN APP -->
-<div id="app" class="hidden">
-
-  <div id="habits" class="grid"></div>
-
-  <div class="charts">
-    <div class="card">
-      <h4>Daily Progress</h4>
-      <canvas id="dailyPie"></canvas>
+    <!-- ADD HABIT -->
+    <div class="add-habit">
+      <input id="habitInput" placeholder="Enter habit (e.g. Water)" />
+      <button onclick="addHabit()">Add</button>
     </div>
 
-    <div class="card">
-      <h4>Monthly Progress</h4>
-      <canvas id="monthlyLine"></canvas>
+    <!-- HABITS -->
+    <div id="habitGrid"></div>
+
+    <!-- PIE CHART -->
+    <div class="chart-box">
+      <canvas id="habitChart"></canvas>
     </div>
+
   </div>
 
-</div>
+  <script>
+    let habits = [];
+    let completed = 0;
 
-<script src="script.js"></script>
+    // PIE CHART INIT
+    const ctx = document.getElementById("habitChart");
+    const chart = new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: ["Done", "Not Done"],
+        datasets: [{
+          data: [0, 0],
+          backgroundColor: ["#22c55e", "#ef4444"]
+        }]
+      },
+      options: {
+        plugins: {
+          legend: { labels: { color: "white" } }
+        }
+      }
+    });
+
+    function updateChart() {
+      completed = habits.filter(h => h.done).length;
+      chart.data.datasets[0].data = [
+        completed,
+        habits.length - completed
+      ];
+      chart.update();
+    }
+
+    function addHabit() {
+      const input = document.getElementById("habitInput");
+      const value = input.value.trim();
+      if (!value) return;
+
+      const habit = { name: value, done: false };
+      habits.push(habit);
+
+      const card = document.createElement("div");
+      card.className = "habit-card";
+
+      const text = document.createElement("p");
+      text.innerText = value;
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.onchange = () => {
+        habit.done = checkbox.checked;
+        updateChart();
+      };
+
+      card.appendChild(text);
+      card.appendChild(checkbox);
+      document.getElementById("habitGrid").appendChild(card);
+
+      input.value = "";
+      updateChart();
+    }
+
+    // SERVICE WORKER REGISTER
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("sw.js");
+    }
+  </script>
+
 </body>
 </html>
