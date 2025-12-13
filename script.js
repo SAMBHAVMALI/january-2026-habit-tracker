@@ -108,12 +108,21 @@ function nextDay() {
 
 /* ================= STATS ================= */
 function dailyStats() {
-  let done = 0, notDone = 0;
-  data.habits.forEach(h => {
-    const v = data.log[currentDay]?.[h];
-    if (v === true) done++;
-    if (v === false) notDone++;
+  let done = 0;
+  let notDone = 0;
+
+  if (!data.log[currentDay]) {
+    return { done: 0, notDone: 0 };
+  }
+
+  data.habits.forEach(habit => {
+    if (data.log[currentDay][habit] === true) {
+      done++;
+    } else if (data.log[currentDay][habit] === false) {
+      notDone++;
+    }
   });
+
   return { done, notDone };
 }
 
