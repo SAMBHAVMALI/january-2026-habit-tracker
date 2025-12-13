@@ -1,200 +1,158 @@
-/***********************
-  CONFIG
-************************/
 const DAYS = 31;
-let currentDay = 1;
+const today = new Date().getDate();
 
-let pieChart = null;
-let lineChart = null;
-
-/***********************
-  DATA
-************************/
-let data = {
-  habits: ["Water", "Workout", "Study", "Sleep"],
+let data = JSON.parse(localStorage.getItem("habitData")) || {
+  habits: [],
   log: {}
 };
 
-function saveData() {
+let pieChart, lineChart;
+
+function save() {
   localStorage.setItem("habitData", JSON.stringify(data));
 }
 
-function loadData() {
-  const saved = localStorage.getItem("habitData");
-  if (saved) data = JSON.parse(saved);
+/* SPLASH */
+setTimeout(() => {
+  document.getElementById("splash").style.display = "none";
+  init();
+}, 1000);
+
+/* MENU */
+function toggleMenu() {
+  document.getElementById("menu").classList.toggle("hidden");
 }
 
-loadData();
+/* INIT */
+function init() {
+  document.getElementById("topbar").classList.remove("hidden");
 
-/***********************
-  HABIT STATUS
-************************/
-function setHabitStatus(habit, status) {
-  if (!data.log[currentDay]) {
-    data.log[currentDay] = {};
+  if (data.habits.length === 0) {
+    document.getElementById("setup").classList.remove("hidden");
+  } else {
+    document.getElementById("app").classList.remove("hidden");
+    renderHabits();
+    renderCharts();
   }
+}
 
-  data.log[currentDay][habit] = status;
-  saveData();
+/* HABITS SETUP */
+function saveHabits() {
+  data.habits = document
+    .getElementById("habitInput")
+    .value.split(",")
+    .map(h => h.trim())
+    .filter(Boolean)
+    .slice(0, 10);
+
+  data.log = {};
+  save();
+
+  document.getElementById("setup").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+
+  renderHabits();
   renderCharts();
 }
 
-/***********************
-  STATS
-************************/
-function dailyStats() {
-  const dayLog = data.log[currentDay] || {};
-  let done = 0;
-  let notDone = 0;
+/* RENDER HABITS */
+function renderHabits() {
+  const box = document.getElementById("habits");
+  box.innerHTML = "";
 
-  data.habits.forEach(habit => {
-    if (dayLog[habit] === true) done++;
-    else if (dayLog[habit] === false) notDone++;
+  if (!data.log[today]) data.log[today] = {};
+
+  data.habits.forEach(h => {
+    const div = document.createElement("div");
+    div.className = "habit card";
+    div.innerHTML = `
+      <h4>${h}</h4>
+      <button class="done">✔ Done</button>
+      <button class="notdone">✖ Not Done</button>
+    `;
+    div.querySelector(".done").onclick = () => {
+      data.log[today][h] = true;
+      save(); renderCharts();
+    };
+    div.querySelector(".notdone").onclick = () => {
+      data.log[today][h] = false;
+      save(); renderCharts();
+    };
+    box.appendChild(div);
   });
+}
 
+/* STATS */
+function dailyStats() {
+  let done = 0, notDone = 0;
+  const log = data.log[today] || {};
+  data.habits.forEach(h => {
+    if (log[h] === true) done++;
+    else if (log[h] === false) notDone++;
+  });
   return { done, notDone };
 }
 
 function monthlyTrend() {
   let arr = [];
-
   for (let d = 1; d <= DAYS; d++) {
-    const dayLog = data.log[d];
-    if (!dayLog) {
-      arr.push(0);
-      continue;
-    }
-
     let count = 0;
-    data.habits.forEach(h => {
-      if (dayLog[h] === true) count++;
-    });
-
+    if (data.log[d]) {
+      data.habits.forEach(h => {
+        if (data.log[d][h] === true) count++;
+      });
+    }
     arr.push(count);
   }
-
   return arr;
 }
 
-/***********************
-  CHARTS
-************************/
+/* CHARTS */
 function renderCharts() {
-  renderDailyPie();
-  renderMonthlyLine();
-}
-
-function renderDailyPie() {
-  const ctx = document.getElementById("dailyPie");
-  if (pieChart) pieChart.destroy();
-
   const { done, notDone } = dailyStats();
 
-  pieChart = new Chart(ctx, {
+  if (pieChart) pieChart.destroy();
+  if (lineChart) lineChart.destroy();
+
+  pieChart = new Chart(dailyPie, {
     type: "pie",
     data: {
       labels: ["Done", "Not Done"],
       datasets: [{
         data: [done, notDone],
-        backgroundColor: ["#22c55e", "#ef4444"]
+        backgroundColor: ["#4caf50", "#f44336"]
       }]
     }
   });
-}
 
-function renderMonthlyLine() {
-  const ctx = document.getElementById("monthlyLine");
-  if (lineChart) lineChart.destroy();
-
-  lineChart = new Chart(ctx, {
+  lineChart = new Chart(monthlyLine, {
     type: "line",
     data: {
       labels: Array.from({ length: DAYS }, (_, i) => i + 1),
       datasets: [{
         label: "Habits Completed",
         data: monthlyTrend(),
-        borderColor: "#3b82f6",
-        tension: 0.3,
-        fill: false
+        borderColor: "#1e90ff",
+        tension: 0.3
       }]
     },
-    options: {
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
+    options: { scales: { y: { beginAtZero: true } } }
   });
 }
 
-/***********************
-  UI
-************************/
-function buildHabitsUI() {
-  const container = document.getElementById("habits");
-  container.innerHTML = "";
-
-  data.habits.forEach(habit => {
-    const card = document.createElement("div");
-    card.className = "habit-card";
-
-    card.innerHTML = `
-      <h3>${habit}</h3>
-      <button class="done">✔ Done</button>
-      <button class="not-done">✖ Not Done</button>
-    `;
-
-    card.querySelector(".done").onclick = () =>
-      setHabitStatus(habit, true);
-
-    card.querySelector(".not-done").onclick = () =>
-      setHabitStatus(habit, false);
-
-    container.appendChild(card);
-  });
+/* RESET OPTIONS */
+function resetToday() {
+  delete data.log[today];
+  save(); renderHabits(); renderCharts();
 }
 
-/***********************
-  BACKUP
-************************/
-function exportData() {
-  const blob = new Blob(
-    [JSON.stringify(data, null, 2)],
-    { type: "application/json" }
-  );
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "habit-backup.json";
-  a.click();
-  URL.revokeObjectURL(url);
+function resetMonth() {
+  data.log = {};
+  save(); renderHabits(); renderCharts();
 }
 
-function importData(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    const imported = JSON.parse(e.target.result);
-    if (!imported.habits || !imported.log) {
-      alert("Invalid backup");
-      return;
-    }
-
-    data = imported;
-    saveData();
-    buildHabitsUI();
-    renderCharts();
-    alert("Backup restored");
-  };
-
-  reader.readAsText(file);
+function resetAll() {
+  localStorage.removeItem("habitData");
+  location.reload();
 }
-
-/***********************
-  INIT
-************************/
-buildHabitsUI();
-renderCharts();
 
