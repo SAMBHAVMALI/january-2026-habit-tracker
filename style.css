@@ -1,159 +1,112 @@
-:root {
-  --bg:#f6f7fb;
-  --text:#374151;
-  --radius:16px;
-  --shadow:0 18px 35px rgba(0,0,0,.08);
+* {
+  box-sizing: border-box;
+  font-family: system-ui, sans-serif;
 }
-
-* { box-sizing:border-box; }
 
 body {
-  margin:0;
-  font-family:system-ui,-apple-system,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-
-/* Screens */
-.screen {
-  position:absolute;
-  inset:0;
-  display:none;
-  background:var(--bg);
-}
-.screen.active { display:block; }
-
-/* Center */
-.center {
-  height:100%;
-  display:grid;
-  place-items:center;
-  text-align:center;
+  margin: 0;
+  background: radial-gradient(circle at top, #111827, #020617);
+  color: #e5e7eb;
 }
 
 /* Splash */
 #splash {
-  background:linear-gradient(135deg,#C7DBDA,#E2F0CB);
-}
-.logo {
-  font-size:60px;
-  font-weight:800;
-  color:#374151;
-}
-.app-name {
-  font-size:32px;
-  font-weight:800;
-  margin-top:10px;
+  position: fixed;
+  inset: 0;
+  background: #020617;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 
-/* Quote */
-#quoteScreen {
-  display:grid;
-  place-items:center;
-  padding:40px;
+#splash img {
+  width: 120px;
+  margin-bottom: 20px;
 }
-#quoteText {
-  font-size:22px;
-  font-weight:800;
-  line-height:1.4;
-  text-align:center;
-  max-width:420px;
-  background:linear-gradient(135deg,#5B5BD6,#55CBCD);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+
+.hidden { display: none; }
+
+/* Setup */
+#setup {
+  padding: 20px;
+}
+
+#habitInputs input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  border: none;
+}
+
+button {
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+}
+
+button.danger {
+  background: #dc2626;
 }
 
 /* App */
-.app-header { padding:16px; }
-
-#habits {
-  padding:12px;
-  display:grid;
-  gap:14px;
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
 }
 
-/* Habit card */
-.habit {
-  perspective:900px;
-}
-.habit-inner {
-  background:white;
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-  padding:16px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  transition:transform .6s;
-  transform-style:preserve-3d;
-}
-.habit.done .habit-inner {
-  transform:rotateY(180deg);
+#habitsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  padding: 16px;
 }
 
-/* Actions */
-.actions button {
-  font-size:22px;
-  padding:6px 10px;
-  margin-left:6px;
-  border:none;
-  background:rgba(255,255,255,.5);
-  border-radius:8px;
+.habitCard {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0,0,0,.5);
 }
 
-/* Three-dot menu */
-.menu {
-  position:relative;
-  display:inline-block;
-}
-.menu-options {
-  position:absolute;
-  right:0;
-  top:28px;
-  background:white;
-  border-radius:8px;
-  box-shadow:var(--shadow);
-  padding:6px;
-  display:none;
-}
-.menu-options button {
-  display:block;
-  width:100%;
-  padding:6px 12px;
-  background:none;
-  border:none;
-  text-align:left;
-}
-.menu.open .menu-options {
-  display:block;
+.habitCard h4 {
+  margin-bottom: 12px;
 }
 
-/* FAB */
-.fab {
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  width:60px;
-  height:60px;
-  border-radius:50%;
-  font-size:32px;
-  border:none;
-  background:#A3E1DC;
-  color:#374151;
+.habitCard button {
+  width: 100%;
+  margin: 6px 0;
 }
 
-/* Modal */
-.hidden { display:none; }
+.done { background: #16a34a; }
+.notdone { background: #991b1b; }
 
-#modal {
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.35);
-  display:grid;
-  place-items:center;
+.charts {
+  display: grid;
+  gap: 20px;
+  padding: 16px;
 }
-.modal-card {
-  background:white;
-  padding:20px;
-  border-radius:16px;
+
+.chartBox {
+  background: rgba(255,255,255,0.06);
+  border-radius: 20px;
+  padding: 16px;
 }
+
+.actions {
+  display: flex;
+  gap: 10px;
+  padding: 16px;
+  flex-wrap: wrap;
+}
+
