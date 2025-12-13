@@ -3,28 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <title>January 2026 Habit Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
 
   <link rel="stylesheet" href="style.css">
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
-<!-- SPLASH -->
-<div id="splash" class="splash-hide">
-  <img src="logo.png" alt="logo">
-  <h1>January Habit Tracker</h1>
-</div>
-
+<h1>January 2026 Habit Tracker</h1>
 
 <!-- SETUP -->
-<div id="setup" class="hidden">
-  <h2>Enter up to 10 habits</h2>
+<div id="setup">
+  <h2>Enter habits (max 10)</h2>
   <div id="habitInputs"></div>
   <button id="startBtn">Start Tracking</button>
 </div>
@@ -32,32 +25,20 @@
 <!-- APP -->
 <div id="app" class="hidden">
 
-  <header>
+  <div class="nav">
     <button id="prevDay">◀</button>
-    <h2 id="dateLabel"></h2>
+    <span id="dateLabel"></span>
     <button id="nextDay">▶</button>
-  </header>
-
-  <div id="habitsGrid"></div>
-
-  <section class="charts">
-    <div class="chartBox">
-      <h3>Daily Progress</h3>
-      <canvas id="dailyPie"></canvas>
-    </div>
-
-    <div class="chartBox">
-      <h3>Monthly Trend</h3>
-      <canvas id="monthlyLine"></canvas>
-    </div>
-  </section>
-
-  <div class="actions">
-    <button id="exportBtn">Export Backup</button>
-    <button id="importBtn">Import Backup</button>
-    <button id="resetBtn" class="danger">Reset All Data</button>
   </div>
 
+  <div id="habits"></div>
+
+  <div class="charts">
+    <canvas id="dailyPie"></canvas>
+    <canvas id="monthlyLine"></canvas>
+  </div>
+
+  <button id="resetAll" class="danger">Reset All Data</button>
 </div>
 
 <script src="script.js"></script>
