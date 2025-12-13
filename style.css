@@ -1,123 +1,65 @@
-* {
-  box-sizing: border-box;
-  font-family: system-ui, sans-serif;
-}
-
 body {
   margin: 0;
-  background: radial-gradient(circle at top, #111827, #020617);
-  color: #e5e7eb;
-}
-
-/* Splash */
-/* SPLASH SAFE */
-#splash {
-  position: fixed;
-  inset: 0;
+  font-family: system-ui, sans-serif;
   background: #020617;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  animation: splashOut 1s ease forwards;
-  animation-delay: 1s;
+  color: #e5e7eb;
+  padding: 16px;
 }
 
-@keyframes splashOut {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
+h1, h2 {
+  text-align: center;
 }
 
-
-#splash img {
-  width: 120px;
-  margin-bottom: 20px;
-}
-
-.hidden { display: none; }
-
-/* Setup */
-#setup {
-  padding: 20px;
-}
-
-#habitInputs input {
-  width: 100%;
-  padding: 12px;
-  margin-bottom: 10px;
-  border-radius: 12px;
-  border: none;
+.hidden {
+  display: none;
 }
 
 button {
-  padding: 12px 16px;
-  border-radius: 14px;
+  padding: 10px 14px;
+  border-radius: 10px;
   border: none;
-  cursor: pointer;
   background: #2563eb;
   color: white;
-  font-weight: bold;
+  font-weight: 600;
+  margin: 6px;
 }
 
 button.danger {
   background: #dc2626;
 }
 
-/* App */
-header {
+#habitInputs input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 8px;
+  border: none;
+}
+
+.nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px;
+  margin: 10px 0;
 }
 
-#habitsGrid {
+#habits {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 16px;
-  padding: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(150px,1fr));
+  gap: 12px;
 }
 
-.habitCard {
-  background: rgba(255,255,255,0.08);
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  padding: 16px;
+.habit {
+  background: #0f172a;
+  padding: 12px;
+  border-radius: 12px;
   text-align: center;
-  box-shadow: 0 20px 40px rgba(0,0,0,.5);
 }
 
-.habitCard h4 {
-  margin-bottom: 12px;
-}
-
-.habitCard button {
+.habit button {
   width: 100%;
-  margin: 6px 0;
 }
-
-.done { background: #16a34a; }
-.notdone { background: #991b1b; }
 
 .charts {
-  display: grid;
-  gap: 20px;
-  padding: 16px;
+  margin-top: 20px;
 }
-
-.chartBox {
-  background: rgba(255,255,255,0.06);
-  border-radius: 20px;
-  padding: 16px;
-}
-
-.actions {
-  display: flex;
-  gap: 10px;
-  padding: 16px;
-  flex-wrap: wrap;
-}
-
