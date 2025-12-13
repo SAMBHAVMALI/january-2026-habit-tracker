@@ -2,68 +2,49 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>January Habit Tracker</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <link rel="icon" href="logo.png">
-  <link rel="stylesheet" href="style.css">
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>HabitFlow</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
+
 <body>
 
-<!-- SPLASH -->
-<div id="splash">
-  <img src="logo.png" alt="Logo">
-  <h1>Habit Tracker</h1>
-</div>
+<div id="root">
 
-<!-- TOP BAR -->
-<div id="topbar" class="hidden">
-  <button id="menuBtn">⋮</button>
-  <span>January 2026</span>
-</div>
-
-<!-- MENU -->
-<div id="menu" class="menu hidden">
-  <button onclick="resetToday()">Reset Today</button>
-  <button onclick="resetMonth()">Reset Month</button>
-  <button onclick="resetAll()">Reset Everything</button>
-</div>
-
-<!-- SETUP -->
-<div id="setup" class="card hidden">
-  <h2>Add Habits (max 10)</h2>
-
-  <div class="habit-input">
-    <input id="habitInput" placeholder="Enter habit">
-    <button onclick="addHabit()">Add</button>
-  </div>
-
-  <div id="habitPreview" class="grid"></div>
-
-  <button class="primary" onclick="startTracking()">Start Tracking</button>
-</div>
-
-<!-- APP -->
-<div id="app" class="hidden">
-
-  <div id="habits" class="grid"></div>
-
-  <div class="charts">
-    <div class="card">
-      <h3>Daily Progress</h3>
-      <canvas id="dailyPie"></canvas>
+  <!-- SPLASH -->
+  <section id="splash" class="screen active">
+    <div class="center">
+      <div class="logo">◎</div>
+      <h1 class="app-name">HabitFlow</h1>
     </div>
+  </section>
 
-    <div class="card">
-      <h3>Monthly Progress</h3>
-      <canvas id="monthlyLine"></canvas>
-    </div>
-  </div>
+  <!-- QUOTE -->
+  <section id="quoteScreen" class="screen">
+    <p id="quoteText"></p>
+  </section>
+
+  <!-- MAIN APP -->
+  <section id="app" class="screen">
+    <header class="app-header">
+      <h2>My Habits</h2>
+    </header>
+
+    <section id="habits"></section>
+
+    <!-- PLUS BUTTON -->
+    <button id="addHabitBtn" class="fab">＋</button>
+  </section>
 
 </div>
 
-<script src="script.js"></script>
+<!-- ADD HABIT MODAL -->
+<div id="modal" class="hidden">
+  <div class="modal-card">
+    <h3>Add Habit</h3>
+    <input id="habitName" placeholder="e.g. Morning Walk">
+    <button id="saveHabit">Save</button>
+  </div>
+</div>
+
 </body>
 </html>
