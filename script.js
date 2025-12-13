@@ -156,3 +156,20 @@ function resetAll() {
   location.reload();
 }
 
+// Subtle 3D tilt on cards (mobile-safe)
+document.addEventListener("mousemove", e => {
+  document.querySelectorAll(".card, .habit").forEach(card => {
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    card.style.transform =
+      `rotateX(${(-y / 40)}deg) rotateY(${(x / 40)}deg) translateZ(20px)`;
+  });
+});
+
+document.addEventListener("mouseleave", () => {
+  document.querySelectorAll(".card, .habit").forEach(card => {
+    card.style.transform = "";
+  });
+});
+
