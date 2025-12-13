@@ -2,49 +2,63 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>HabitFlow</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
+  <title>January 2026 Habit Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0f172a">
+
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 <body>
 
-<div id="root">
+<!-- SPLASH -->
+<div id="splash">
+  <img src="logo.png" alt="logo">
+  <h1>January Habit Tracker</h1>
+</div>
 
-  <!-- SPLASH -->
-  <section id="splash" class="screen active">
-    <div class="center">
-      <div class="logo">◎</div>
-      <h1 class="app-name">HabitFlow</h1>
+<!-- SETUP -->
+<div id="setup" class="hidden">
+  <h2>Enter up to 10 habits</h2>
+  <div id="habitInputs"></div>
+  <button id="startBtn">Start Tracking</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+  <header>
+    <button id="prevDay">◀</button>
+    <h2 id="dateLabel"></h2>
+    <button id="nextDay">▶</button>
+  </header>
+
+  <div id="habitsGrid"></div>
+
+  <section class="charts">
+    <div class="chartBox">
+      <h3>Daily Progress</h3>
+      <canvas id="dailyPie"></canvas>
+    </div>
+
+    <div class="chartBox">
+      <h3>Monthly Trend</h3>
+      <canvas id="monthlyLine"></canvas>
     </div>
   </section>
 
-  <!-- QUOTE -->
-  <section id="quoteScreen" class="screen">
-    <p id="quoteText"></p>
-  </section>
-
-  <!-- MAIN APP -->
-  <section id="app" class="screen">
-    <header class="app-header">
-      <h2>My Habits</h2>
-    </header>
-
-    <section id="habits"></section>
-
-    <!-- PLUS BUTTON -->
-    <button id="addHabitBtn" class="fab">＋</button>
-  </section>
-
-</div>
-
-<!-- ADD HABIT MODAL -->
-<div id="modal" class="hidden">
-  <div class="modal-card">
-    <h3>Add Habit</h3>
-    <input id="habitName" placeholder="e.g. Morning Walk">
-    <button id="saveHabit">Save</button>
+  <div class="actions">
+    <button id="exportBtn">Export Backup</button>
+    <button id="importBtn">Import Backup</button>
+    <button id="resetBtn" class="danger">Reset All Data</button>
   </div>
+
 </div>
 
+<script src="script.js"></script>
 </body>
 </html>
