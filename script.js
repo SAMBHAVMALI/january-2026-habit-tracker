@@ -1,172 +1,95 @@
-const DAYS = 31;
-const today = new Date().getDate();
+        
+window.addEventListener("load",()=>{
 
-let data = JSON.parse(localStorage.getItem("habitData")) || {
-  habits: [],
-  log: {}
-};
-
-let tempHabits = [];
-let pieChart, lineChart;
-
-/* SPLASH */
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    document.getElementById("splash").remove();
-    init();
-  }, 1000);
-});
-
-/* SAVE */
-function save() {
-  localStorage.setItem("habitData", JSON.stringify(data));
+/* Screen control */
+function show(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
-/* INIT */
-function init() {
-  document.getElementById("topbar").classList.remove("hidden");
+/* Quotes */
+const QUOTES=[
+ "Small habits create big results.",
+ "Discipline beats motivation.",
+ "Consistency builds success.",
+ "Your habits shape your future.",
+ "Focus on systems, not goals."
+];
+quoteText.textContent=QUOTES[Math.floor(Math.random()*QUOTES.length)];
 
-  if (data.habits.length === 0) {
-    document.getElementById("setup").classList.remove("hidden");
-  } else {
-    document.getElementById("app").classList.remove("hidden");
-    renderHabits();
-    renderCharts();
-  }
+/* Splash → Quote → App */
+show("splash");
+setTimeout(()=>{
+  show("quoteScreen");
+  setTimeout(()=>show("app"),2500);
+},1000);
+
+/* Pastel palette (from your image) */
+const PALETTES=[
+ "#97C1A9","#B7CFB7","#CCE2CB","#C7DBDA",
+ "#FFE1E9","#FFD7C2","#F6EAC2",
+ "#FFB8B1","#FFDACC","#F5D2D3",
+ "#9AB7D3","#A3E1DC","#55CBCD","#DFCCF1"
+];
+function habitColor(name){
+  let h=0;
+  for(let c of name) h=c.charCodeAt(0)+((h<<5)-h);
+  return PALETTES[Math.abs(h)%PALETTES.length];
 }
 
-/* MENU */
-document.getElementById("menuBtn").onclick = () => {
-  document.getElementById("menu").classList.toggle("hidden");
-};
+/* State */
+const habits=[];
 
-/* HABIT SETUP */
-function addHabit() {
-  const input = document.getElementById("habitInput");
-  const name = input.value.trim();
-  if (!name || tempHabits.length >= 10) return;
+/* Render */
+function render(){
+  habitsEl.innerHTML="";
+  habits.forEach((h,i)=>{
+    const card=document.createElement("div");
+    card.className="habit"+(h.done?" done":"");
 
-  tempHabits.push(name);
-  input.value = "";
-  renderPreview();
-}
-
-function renderPreview() {
-  const box = document.getElementById("habitPreview");
-  box.innerHTML = "";
-  tempHabits.forEach(h => {
-    const div = document.createElement("div");
-    div.className = "habit";
-    div.textContent = h;
-    box.appendChild(div);
-  });
-}
-
-function startTracking() {
-  data.habits = tempHabits;
-  data.log = {};
-  save();
-  document.getElementById("setup").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
-  renderHabits();
-  renderCharts();
-}
-
-/* HABITS */
-function renderHabits() {
-  const box = document.getElementById("habits");
-  box.innerHTML = "";
-  if (!data.log[today]) data.log[today] = {};
-
-  data.habits.forEach(h => {
-    const div = document.createElement("div");
-    div.className = "habit card";
-    div.innerHTML = `
-      <h4>${h}</h4>
-      <button class="done">✔ Done</button>
-      <button class="notdone">✖ Not Done</button>
+    card.innerHTML=`
+      <div class="habit-inner" style="background:${habitColor(h.name)}">
+        <span>${h.name}</span>
+        <div class="actions">
+          <button onclick="toggleDone(${i},true)">✓</button>
+          <button onclick="toggleDone(${i},false)">✕</button>
+          <span class="menu">
+            <button onclick="toggleMenu(this)">⋮</button>
+            <div class="menu-options">
+              <button onclick="deleteHabit(${i})">Delete</button>
+            </div>
+          </span>
+        </div>
+      </div>
     `;
-    div.querySelector(".done").onclick = () => {
-      data.log[today][h] = true;
-      save(); renderCharts();
-    };
-    div.querySelector(".notdone").onclick = () => {
-      data.log[today][h] = false;
-      save(); renderCharts();
-    };
-    box.appendChild(div);
+    habitsEl.appendChild(card);
   });
 }
 
-/* STATS */
-function dailyStats() {
-  let done = 0, notDone = 0;
-  const log = data.log[today] || {};
-  data.habits.forEach(h => {
-    if (log[h] === true) done++;
-    else if (log[h] === false) notDone++;
-  });
-  return { done, notDone };
-}
+/* Actions */
+window.toggleDone=(i,val)=>{
+  habits[i].done=val;
+  render();
+};
 
-function monthlyTrend() {
-  let arr = [];
-  for (let d = 1; d <= DAYS; d++) {
-    let count = 0;
-    if (data.log[d]) {
-      data.habits.forEach(h => {
-        if (data.log[d][h] === true) count++;
-      });
-    }
-    arr.push(count);
-  }
-  return arr;
-}
+window.toggleMenu=(btn)=>{
+  document.querySelectorAll(".menu").forEach(m=>m.classList.remove("open"));
+  btn.parentElement.classList.toggle("open");
+};
 
-/* CHARTS */
-function renderCharts() {
-  const { done, notDone } = dailyStats();
+window.deleteHabit=(i)=>{
+  habits.splice(i,1);
+  render();
+};
 
-  if (pieChart) pieChart.destroy();
-  if (lineChart) lineChart.destroy();
+/* Add habit */
+addHabitBtn.onclick=()=>modal.classList.remove("hidden");
+saveHabit.onclick=()=>{
+  if(!habitName.value.trim()) return;
+  habits.push({name:habitName.value,done:false});
+  habitName.value="";
+  modal.classList.add("hidden");
+  render();
+};
 
-  pieChart = new Chart(dailyPie, {
-    type: "pie",
-    data: {
-      labels: ["Done", "Not Done"],
-      datasets: [{
-        data: [done, notDone],
-        backgroundColor: ["#4caf50", "#f44336"]
-      }]
-    }
-  });
-
-  lineChart = new Chart(monthlyLine, {
-    type: "line",
-    data: {
-      labels: Array.from({ length: DAYS }, (_, i) => i + 1),
-      datasets: [{
-        label: "Habits Completed",
-        data: monthlyTrend(),
-        borderColor: "#1e90ff",
-        tension: 0.3
-      }]
-    },
-    options: { scales: { y: { beginAtZero: true } } }
-  });
-}
-
-/* RESET */
-function resetToday() {
-  delete data.log[today];
-  save(); renderHabits(); renderCharts();
-}
-function resetMonth() {
-  data.log = {};
-  save(); renderHabits(); renderCharts();
-}
-function resetAll() {
-  localStorage.removeItem("habitData");
-  location.reload();
-}
-
+});
