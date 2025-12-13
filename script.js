@@ -1,5 +1,5 @@
 /***********************
-  BASIC CONFIG
+  CONFIG
 ************************/
 const DAYS = 31;
 let currentDay = 1;
@@ -8,10 +8,10 @@ let pieChart = null;
 let lineChart = null;
 
 /***********************
-  DATA STORAGE
+  DATA
 ************************/
 let data = {
-  habits: [],
+  habits: ["Water", "Workout", "Study", "Sleep"],
   log: {}
 };
 
@@ -27,7 +27,7 @@ function loadData() {
 loadData();
 
 /***********************
-  SET HABIT STATUS
+  HABIT STATUS
 ************************/
 function setHabitStatus(habit, status) {
   if (!data.log[currentDay]) {
@@ -35,7 +35,6 @@ function setHabitStatus(habit, status) {
   }
 
   data.log[currentDay][habit] = status;
-
   saveData();
   renderCharts();
 }
@@ -78,20 +77,15 @@ function monthlyTrend() {
 }
 
 /***********************
-  CHART RENDER
+  CHARTS
 ************************/
 function renderCharts() {
   renderDailyPie();
   renderMonthlyLine();
 }
 
-/***********************
-  DAILY PIE CHART
-************************/
 function renderDailyPie() {
   const ctx = document.getElementById("dailyPie");
-  if (!ctx) return;
-
   if (pieChart) pieChart.destroy();
 
   const { done, notDone } = dailyStats();
@@ -102,22 +96,14 @@ function renderDailyPie() {
       labels: ["Done", "Not Done"],
       datasets: [{
         data: [done, notDone],
-        backgroundColor: ["#7CFC98", "#F45B5B"]
+        backgroundColor: ["#22c55e", "#ef4444"]
       }]
-    },
-    options: {
-      responsive: true
     }
   });
 }
 
-/***********************
-  MONTHLY LINE CHART
-************************/
 function renderMonthlyLine() {
   const ctx = document.getElementById("monthlyLine");
-  if (!ctx) return;
-
   if (lineChart) lineChart.destroy();
 
   lineChart = new Chart(ctx, {
@@ -127,57 +113,83 @@ function renderMonthlyLine() {
       datasets: [{
         label: "Habits Completed",
         data: monthlyTrend(),
-        borderColor: "#00b0ff",
-        backgroundColor: "rgba(0,176,255,0.2)",
+        borderColor: "#3b82f6",
         tension: 0.3,
-        pointRadius: 5,
-        fill: true
+        fill: false
       }]
     },
     options: {
-      responsive: true,
       scales: {
-        y: {
-          beginAtZero: true,
-          ticks: { stepSize: 1 }
-        }
+        y: { beginAtZero: true }
       }
     }
   });
 }
 
 /***********************
-  UI BUILD
+  UI
 ************************/
 function buildHabitsUI() {
   const container = document.getElementById("habits");
-  if (!container) return;
-
   container.innerHTML = "";
 
   data.habits.forEach(habit => {
     const card = document.createElement("div");
     card.className = "habit-card";
 
-    const title = document.createElement("h3");
-    title.textContent = habit;
+    card.innerHTML = `
+      <h3>${habit}</h3>
+      <button class="done">✔ Done</button>
+      <button class="not-done">✖ Not Done</button>
+    `;
 
-    const doneBtn = document.createElement("button");
-    doneBtn.className = "done";
-    doneBtn.textContent = "✔ DONE";
-    doneBtn.onclick = () => setHabitStatus(habit, true);
+    card.querySelector(".done").onclick = () =>
+      setHabitStatus(habit, true);
 
-    const notDoneBtn = document.createElement("button");
-    notDoneBtn.className = "not-done";
-    notDoneBtn.textContent = "✖ NOT DONE";
-    notDoneBtn.onclick = () => setHabitStatus(habit, false);
-
-    card.appendChild(title);
-    card.appendChild(doneBtn);
-    card.appendChild(notDoneBtn);
+    card.querySelector(".not-done").onclick = () =>
+      setHabitStatus(habit, false);
 
     container.appendChild(card);
   });
+}
+
+/***********************
+  BACKUP
+************************/
+function exportData() {
+  const blob = new Blob(
+    [JSON.stringify(data, null, 2)],
+    { type: "application/json" }
+  );
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "habit-backup.json";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const imported = JSON.parse(e.target.result);
+    if (!imported.habits || !imported.log) {
+      alert("Invalid backup");
+      return;
+    }
+
+    data = imported;
+    saveData();
+    buildHabitsUI();
+    renderCharts();
+    alert("Backup restored");
+  };
+
+  reader.readAsText(file);
 }
 
 /***********************
