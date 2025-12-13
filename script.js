@@ -1,151 +1,97 @@
-/* ================= CONFIG ================= */
+/***********************
+  BASIC CONFIG
+************************/
 const DAYS = 31;
-const MONTH = "January 2026";
-
-/* ================= STATE ================= */
 let currentDay = 1;
+
 let pieChart = null;
 let lineChart = null;
 
-let data = JSON.parse(localStorage.getItem("jan2026Tracker")) || {
+/***********************
+  DATA STORAGE
+************************/
+let data = {
   habits: [],
-  log: {} // { day: { habit: true/false } }
+  log: {}
 };
 
-/* ================= INIT ================= */
-document.addEventListener("DOMContentLoaded", () => {
-  if (data.habits.length === 0) {
-    renderSetup();
-  } else {
-    showMain();
-  }
-});
-
-/* ================= SETUP ================= */
-function renderSetup() {
-  const setup = document.getElementById("setup");
-  setup.innerHTML = `
-    <h2>Enter 10 Habits for ${MONTH}</h2>
-    ${Array.from({ length: 10 }).map(
-      (_, i) => `<input placeholder="Habit ${i + 1}" />`
-    ).join("")}
-    <button onclick="startTracking()">Start Tracking</button>
-  `;
+function saveData() {
+  localStorage.setItem("habitData", JSON.stringify(data));
 }
 
-function startTracking() {
-  const inputs = document.querySelectorAll("#setup input");
-  const habits = [...inputs].map(i => i.value.trim()).filter(Boolean);
+function loadData() {
+  const saved = localStorage.getItem("habitData");
+  if (saved) data = JSON.parse(saved);
+}
 
-  if (habits.length !== 10) {
-    alert("Please enter exactly 10 habits");
-    return;
+loadData();
+
+/***********************
+  SET HABIT STATUS
+************************/
+function setHabitStatus(habit, status) {
+  if (!data.log[currentDay]) {
+    data.log[currentDay] = {};
   }
 
-  data.habits = habits;
-  save();
-  showMain();
-}
+  data.log[currentDay][habit] = status;
 
-/* ================= MAIN ================= */
-function showMain() {
-  document.getElementById("setup").style.display = "none";
-  document.getElementById("main").style.display = "block";
-  renderDay();
-}
-
-/* ================= DAY UI ================= */
-function renderDay() {
-  document.getElementById("dateText").innerText =
-    `Day ${currentDay} – ${MONTH}`;
-
-  const container = document.getElementById("habits");
-  container.innerHTML = "";
-
-  data.habits.forEach(habit => {
-    const status = data.log[currentDay]?.[habit];
-
-    const card = document.createElement("div");
-    card.className = "habit-card";
-
-    card.innerHTML = `
-      <h3>${habit}</h3>
-      <div class="actions">
-        <button class="${status === true ? "active done" : "done"}"
-          onclick="setHabit('${habit}', true)">✔ DONE</button>
-        <button class="${status === false ? "active notdone" : "notdone"}"
-          onclick="setHabit('${habit}', false)">✖ NOT DONE</button>
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
-
+  saveData();
   renderCharts();
 }
 
-/* ================= ACTIONS ================= */
-function setHabit(habit, value) {
-  if (!data.log[currentDay]) data.log[currentDay] = {};
-  data.log[currentDay][habit] = value;
-  save();
-  renderDay();
-}
-
-function prevDay() {
-  if (currentDay > 1) {
-    currentDay--;
-    renderDay();
-  }
-}
-
-function nextDay() {
-  if (currentDay < DAYS) {
-    currentDay++;
-    renderDay();
-  }
-}
-
-/* ================= STATS ================= */
+/***********************
+  STATS
+************************/
 function dailyStats() {
+  const dayLog = data.log[currentDay] || {};
   let done = 0;
   let notDone = 0;
 
-  if (!data.log[currentDay]) {
-    return { done: 0, notDone: 0 };
-  }
-
   data.habits.forEach(habit => {
-    if (data.log[currentDay][habit] === true) {
-      done++;
-    } else if (data.log[currentDay][habit] === false) {
-      notDone++;
-    }
+    if (dayLog[habit] === true) done++;
+    else if (dayLog[habit] === false) notDone++;
   });
 
   return { done, notDone };
 }
 
 function monthlyTrend() {
-  const arr = [];
+  let arr = [];
+
   for (let d = 1; d <= DAYS; d++) {
+    const dayLog = data.log[d];
+    if (!dayLog) {
+      arr.push(0);
+      continue;
+    }
+
     let count = 0;
     data.habits.forEach(h => {
-      if (data.log[d]?.[h] === true) count++;
+      if (dayLog[h] === true) count++;
     });
+
     arr.push(count);
   }
+
   return arr;
 }
 
-/* ================= CHARTS ================= */
+/***********************
+  CHART RENDER
+************************/
 function renderCharts() {
   renderDailyPie();
   renderMonthlyLine();
 }
 
+/***********************
+  DAILY PIE CHART
+************************/
 function renderDailyPie() {
   const ctx = document.getElementById("dailyPie");
+  if (!ctx) return;
+
   if (pieChart) pieChart.destroy();
 
   const { done, notDone } = dailyStats();
@@ -156,7 +102,7 @@ function renderDailyPie() {
       labels: ["Done", "Not Done"],
       datasets: [{
         data: [done, notDone],
-        backgroundColor: ["#00ff99", "#ff4d4d"]
+        backgroundColor: ["#7CFC98", "#F45B5B"]
       }]
     },
     options: {
@@ -165,8 +111,13 @@ function renderDailyPie() {
   });
 }
 
+/***********************
+  MONTHLY LINE CHART
+************************/
 function renderMonthlyLine() {
   const ctx = document.getElementById("monthlyLine");
+  if (!ctx) return;
+
   if (lineChart) lineChart.destroy();
 
   lineChart = new Chart(ctx, {
@@ -195,7 +146,43 @@ function renderMonthlyLine() {
   });
 }
 
-/* ================= STORAGE ================= */
-function save() {
-  localStorage.setItem("jan2026Tracker", JSON.stringify(data));
+/***********************
+  UI BUILD
+************************/
+function buildHabitsUI() {
+  const container = document.getElementById("habits");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  data.habits.forEach(habit => {
+    const card = document.createElement("div");
+    card.className = "habit-card";
+
+    const title = document.createElement("h3");
+    title.textContent = habit;
+
+    const doneBtn = document.createElement("button");
+    doneBtn.className = "done";
+    doneBtn.textContent = "✔ DONE";
+    doneBtn.onclick = () => setHabitStatus(habit, true);
+
+    const notDoneBtn = document.createElement("button");
+    notDoneBtn.className = "not-done";
+    notDoneBtn.textContent = "✖ NOT DONE";
+    notDoneBtn.onclick = () => setHabitStatus(habit, false);
+
+    card.appendChild(title);
+    card.appendChild(doneBtn);
+    card.appendChild(notDoneBtn);
+
+    container.appendChild(card);
+  });
 }
+
+/***********************
+  INIT
+************************/
+buildHabitsUI();
+renderCharts();
+
