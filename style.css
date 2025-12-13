@@ -1,106 +1,159 @@
+:root {
+  --bg:#f6f7fb;
+  --text:#374151;
+  --radius:16px;
+  --shadow:0 18px 35px rgba(0,0,0,.08);
+}
+
+* { box-sizing:border-box; }
+
 body {
-  margin: 0;
-  font-family: system-ui, sans-serif;
-  background: radial-gradient(circle at top, #121212, #050505);
-  color: white;
-  text-align: center;
-  perspective: 1200px;
+  margin:0;
+  font-family:system-ui,-apple-system,sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
-/* SPLASH */
+/* Screens */
+.screen {
+  position:absolute;
+  inset:0;
+  display:none;
+  background:var(--bg);
+}
+.screen.active { display:block; }
+
+/* Center */
+.center {
+  height:100%;
+  display:grid;
+  place-items:center;
+  text-align:center;
+}
+
+/* Splash */
 #splash {
-  position: fixed;
-  inset: 0;
-  background: black;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  z-index: 999;
+  background:linear-gradient(135deg,#C7DBDA,#E2F0CB);
 }
-#splash img {
-  width: 120px;
-  filter: drop-shadow(0 20px 30px rgba(0,0,0,0.9));
+.logo {
+  font-size:60px;
+  font-weight:800;
+  color:#374151;
 }
-
-/* TOP BAR */
-#topbar {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px;
-  background: linear-gradient(145deg, #141414, #0a0a0a);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.8);
-}
-#menuBtn {
-  background: none;
-  border: none;
-  color: white;
-  font-size: 22px;
+.app-name {
+  font-size:32px;
+  font-weight:800;
+  margin-top:10px;
 }
 
-/* MENU */
-.menu {
-  position: absolute;
-  top: 55px;
-  left: 10px;
-  background: #1b1b1b;
-  border-radius: 12px;
-  padding: 10px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.9);
+/* Quote */
+#quoteScreen {
+  display:grid;
+  place-items:center;
+  padding:40px;
 }
-.menu button {
-  display: block;
-  width: 100%;
-  margin: 6px 0;
-}
-
-/* COMMON */
-.hidden { display: none; }
-
-.card {
-  background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
-  padding: 16px;
-  margin: 12px;
-  border-radius: 14px;
-  box-shadow: 0 15px 30px rgba(0,0,0,0.7);
-  transform-style: preserve-3d;
+#quoteText {
+  font-size:22px;
+  font-weight:800;
+  line-height:1.4;
+  text-align:center;
+  max-width:420px;
+  background:linear-gradient(135deg,#5B5BD6,#55CBCD);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
 
-input {
-  padding: 10px;
-  width: 70%;
-  border-radius: 8px;
-  border: none;
+/* App */
+.app-header { padding:16px; }
+
+#habits {
+  padding:12px;
+  display:grid;
+  gap:14px;
 }
 
-button {
-  padding: 10px 14px;
-  border-radius: 10px;
-  border: none;
-  background: #1e90ff;
-  color: white;
-  margin: 6px;
-}
-
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  padding: 12px;
-}
-
+/* Habit card */
 .habit {
-  background: #1b1b1b;
-  border-radius: 14px;
-  padding: 12px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+  perspective:900px;
+}
+.habit-inner {
+  background:white;
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  transition:transform .6s;
+  transform-style:preserve-3d;
+}
+.habit.done .habit-inner {
+  transform:rotateY(180deg);
 }
 
-.done { background: #2e8b57; }
-.notdone { background: #8b2e2e; }
+/* Actions */
+.actions button {
+  font-size:22px;
+  padding:6px 10px;
+  margin-left:6px;
+  border:none;
+  background:rgba(255,255,255,.5);
+  border-radius:8px;
+}
 
-.charts {
-  display: grid;
-  grid-template-columns: 1fr;
+/* Three-dot menu */
+.menu {
+  position:relative;
+  display:inline-block;
+}
+.menu-options {
+  position:absolute;
+  right:0;
+  top:28px;
+  background:white;
+  border-radius:8px;
+  box-shadow:var(--shadow);
+  padding:6px;
+  display:none;
+}
+.menu-options button {
+  display:block;
+  width:100%;
+  padding:6px 12px;
+  background:none;
+  border:none;
+  text-align:left;
+}
+.menu.open .menu-options {
+  display:block;
+}
+
+/* FAB */
+.fab {
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  font-size:32px;
+  border:none;
+  background:#A3E1DC;
+  color:#374151;
+}
+
+/* Modal */
+.hidden { display:none; }
+
+#modal {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  display:grid;
+  place-items:center;
+}
+.modal-card {
+  background:white;
+  padding:20px;
+  border-radius:16px;
 }
