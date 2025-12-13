@@ -3,44 +3,60 @@
 <head>
   <meta charset="UTF-8" />
   <title>January 2026 Habit Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <link rel="icon" href="./favicon.png" />
-  <link rel="manifest" href="./manifest.json">
-  <meta name="theme-color" content="#0b0b0b">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="logo.png">
 
-  <link rel="stylesheet" href="style.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
-  <h1>January 2026 Habit Tracker</h1>
 
-  <!-- HABITS -->
-  <div id="habits" class="habits"></div>
+<!-- SPLASH SCREEN -->
+<div id="splash">
+  <img src="logo.png" alt="Logo">
+  <h2>Habit Tracker</h2>
+</div>
 
-  <!-- CHARTS -->
+<!-- TOP BAR -->
+<div id="topbar" class="hidden">
+  <span class="menu" onclick="toggleMenu()">⋮</span>
+  <span class="title">January 2026 Habit Tracker</span>
+</div>
+
+<!-- MENU -->
+<div id="menu" class="menu-box hidden">
+  <button onclick="resetToday()">Reset Today</button>
+  <button onclick="resetMonth()">Reset Month</button>
+  <button onclick="resetAll()">Reset Everything</button>
+</div>
+
+<!-- SETUP -->
+<div id="setup" class="card hidden">
+  <h3>Enter up to 10 habits</h3>
+  <input id="habitInput" placeholder="Water, Workout, Study..." />
+  <button onclick="saveHabits()">Start Tracking</button>
+</div>
+
+<!-- MAIN APP -->
+<div id="app" class="hidden">
+
+  <div id="habits" class="grid"></div>
+
   <div class="charts">
-    <div class="chart-box">
-      <h3>Daily Progress</h3>
+    <div class="card">
+      <h4>Daily Progress</h4>
       <canvas id="dailyPie"></canvas>
     </div>
 
-    <div class="chart-box">
-      <h3>Monthly Progress</h3>
+    <div class="card">
+      <h4>Monthly Progress</h4>
       <canvas id="monthlyLine"></canvas>
     </div>
   </div>
 
-  <!-- BACKUP -->
-  <div class="backup-box">
-    <button onclick="exportData()">⬇️ Export Backup</button>
+</div>
 
-    <label class="import-btn">
-      ⬆️ Import Backup
-      <input type="file" accept="application/json" onchange="importData(event)" hidden />
-    </label>
-  </div>
-
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
