@@ -2,40 +2,68 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Jason Habit Tracker</title>
+  <title>January Habit Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0f172a">
-
-  <!-- CSS -->
+  <link rel="icon" href="logo.png">
   <link rel="stylesheet" href="style.css">
 
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-
 <body>
 
-  <header>Jason Habit Tracker</header>
+<!-- SPLASH -->
+<div id="splash">
+  <img src="logo.png" alt="Logo">
+  <h1>Habit Tracker</h1>
+</div>
 
-  <main class="container">
+<!-- TOP BAR -->
+<div id="topbar" class="hidden">
+  <button id="menuBtn">⋮</button>
+  <span>January 2026</span>
+</div>
 
-    <div class="add-habit">
-      <input id="habitInput" placeholder="Enter habit (e.g. Water)" />
-      <button id="addHabitBtn">Add</button>
+<!-- MENU -->
+<div id="menu" class="menu hidden">
+  <button onclick="resetToday()">Reset Today</button>
+  <button onclick="resetMonth()">Reset Month</button>
+  <button onclick="resetAll()">Reset Everything</button>
+</div>
+
+<!-- SETUP -->
+<div id="setup" class="card hidden">
+  <h2>Add Habits (max 10)</h2>
+
+  <div class="habit-input">
+    <input id="habitInput" placeholder="Enter habit">
+    <button onclick="addHabit()">Add</button>
+  </div>
+
+  <div id="habitPreview" class="grid"></div>
+
+  <button class="primary" onclick="startTracking()">Start Tracking</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+  <div id="habits" class="grid"></div>
+
+  <div class="charts">
+    <div class="card">
+      <h3>Daily Progress</h3>
+      <canvas id="dailyPie"></canvas>
     </div>
 
-    <div id="habitGrid"></div>
-
-    <div class="chart-box">
-      <canvas id="habitChart"></canvas>
+    <div class="card">
+      <h3>Monthly Progress</h3>
+      <canvas id="monthlyLine"></canvas>
     </div>
+  </div>
 
-  </main>
+</div>
 
-  <!-- JS -->
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
