@@ -9,171 +9,33 @@
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
 
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #020617;
-      color: white;
-    }
-
-    header {
-      text-align: center;
-      padding: 16px;
-      font-size: 20px;
-      font-weight: bold;
-    }
-
-    .container {
-      padding: 16px;
-    }
-
-    .add-habit {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-
-    .add-habit input {
-      flex: 1;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      outline: none;
-    }
-
-    .add-habit button {
-      padding: 10px 14px;
-      border-radius: 8px;
-      border: none;
-      background: #2563eb;
-      color: white;
-      cursor: pointer;
-    }
-
-    /* HABIT COLUMNS */
-    #habitGrid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-bottom: 24px;
-    }
-
-    .habit-card {
-      background: #0f172a;
-      border-radius: 14px;
-      padding: 12px;
-      text-align: center;
-    }
-
-    .habit-card p {
-      margin: 0 0 10px;
-      font-weight: 600;
-    }
-
-    .habit-card input {
-      transform: scale(1.4);
-    }
-
-    /* PIE */
-    .chart-box {
-      background: #0f172a;
-      border-radius: 16px;
-      padding: 16px;
-    }
-  </style>
 </head>
 
 <body>
 
   <header>Jason Habit Tracker</header>
 
-  <div class="container">
+  <main class="container">
 
-    <!-- ADD HABIT -->
     <div class="add-habit">
       <input id="habitInput" placeholder="Enter habit (e.g. Water)" />
-      <button onclick="addHabit()">Add</button>
+      <button id="addHabitBtn">Add</button>
     </div>
 
-    <!-- HABITS -->
     <div id="habitGrid"></div>
 
-    <!-- PIE CHART -->
     <div class="chart-box">
       <canvas id="habitChart"></canvas>
     </div>
 
-  </div>
+  </main>
 
-  <script>
-    let habits = [];
-    let completed = 0;
-
-    // PIE CHART INIT
-    const ctx = document.getElementById("habitChart");
-    const chart = new Chart(ctx, {
-      type: "pie",
-      data: {
-        labels: ["Done", "Not Done"],
-        datasets: [{
-          data: [0, 0],
-          backgroundColor: ["#22c55e", "#ef4444"]
-        }]
-      },
-      options: {
-        plugins: {
-          legend: { labels: { color: "white" } }
-        }
-      }
-    });
-
-    function updateChart() {
-      completed = habits.filter(h => h.done).length;
-      chart.data.datasets[0].data = [
-        completed,
-        habits.length - completed
-      ];
-      chart.update();
-    }
-
-    function addHabit() {
-      const input = document.getElementById("habitInput");
-      const value = input.value.trim();
-      if (!value) return;
-
-      const habit = { name: value, done: false };
-      habits.push(habit);
-
-      const card = document.createElement("div");
-      card.className = "habit-card";
-
-      const text = document.createElement("p");
-      text.innerText = value;
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.onchange = () => {
-        habit.done = checkbox.checked;
-        updateChart();
-      };
-
-      card.appendChild(text);
-      card.appendChild(checkbox);
-      document.getElementById("habitGrid").appendChild(card);
-
-      input.value = "";
-      updateChart();
-    }
-
-    // SERVICE WORKER REGISTER
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js");
-    }
-  </script>
-
+  <!-- JS -->
+  <script src="script.js"></script>
 </body>
 </html>
